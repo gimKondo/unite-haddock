@@ -22,7 +22,11 @@ function! s:kind.action_table.browse_local.func(candidates)
     endif
     let l:pkg = s:find_pkg(l:mod)
     let l:output = unite#haddock#ghc_pkg('field ' . l:pkg . ' haddock-html')
-    let l:dir = matchstr(substitute(l:output, '\n', ' ', 'g'), 'haddock-html: \zs\S\+\ze')
+    if has('win32')
+        let l:dir = matchstr(substitute(l:output, '\n', ' ', 'g'), 'haddock-html: \"\zs.\+\ze\"')
+    else
+        let l:dir = matchstr(substitute(l:output, '\n', ' ', 'g'), 'haddock-html: \zs\S\+\ze')
+    endif
     let l:path = printf('%s/%s.html', l:dir, substitute(l:mod, '\.', '-', 'g'))
     if filereadable(l:path)
       let l:path .= get(l:candidate, 'action__haddock_fragment', '')
